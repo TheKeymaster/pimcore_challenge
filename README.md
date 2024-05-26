@@ -90,3 +90,14 @@ bin/console import:teams <file> [<sheetName>]
 
 * `<file>`: Path from the root directory of the project to your file. E.g. 'example.xlsx'
 * `[<sheetName>]`: Allows importing only a single sheet, instead of all.
+
+### Application Usage
+
+Simply open your web browser at [http://localhost:8012/football/teams](http://localhost:8012/football/teams) to view
+all current teams in the database. It should look something along those lines:
+
+![/docs/images/example_overview.png](/docs/images/example_overview.png)
+
+Clicking on "Details" will show you a detailed view of the football team:
+
+![/docs/images/example_item.png](/docs/images/example_item.png)

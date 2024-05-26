@@ -13,18 +13,22 @@ class PlayerPosition extends AbstractModel
     public ?int $id = null;
     public ?string $name = null;
 
-    public static function getById(int $id): ?PlayerPosition
+    public static function getById(?int $id, ?PlayerPosition $default = null): ?PlayerPosition
     {
+        if (!$id) {
+            return $default;
+        }
+
         try {
             $obj = new self;
             $obj->getDao()->getById($id);
             return $obj;
         }
         catch (NotFoundException) {
-            \Pimcore\Logger::warn(sprintf('Trainer with id %d not found', $id));
+            \Pimcore\Logger::warn(sprintf('PlayerPosition with id %d not found', $id));
         }
 
-        return null;
+        return $default;
     }
 
     public static function getByName(string $name): ?PlayerPosition
@@ -40,7 +44,7 @@ class PlayerPosition extends AbstractModel
         return null;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

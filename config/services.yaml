@@ -65,6 +65,14 @@ services:
         arguments:
             $bundle: "@=service('kernel').getBundle('AppBundle')"
 
+    App\SnakeCaseToCamelCaseConverter:
+
+    App\Model\Team\Listing:
+
+
+    App\Twig\Extension\RandomNumberGeneratorExtension:
+        tags:
+            - { name: twig.extension }
 
     # Example custom templating helper
     # App\Templating\Helper\Example:

@@ -22,8 +22,12 @@ class Trainer extends AbstractModel
     #[ORM\OneToMany(mappedBy: 'trainer', targetEntity: Team::class)]
     private Collection $teams;
 
-    public static function getById(int $id): ?Trainer
+    public static function getById(?int $id, ?Trainer $default = null): ?Trainer
     {
+        if (!$id) {
+            return $default;
+        }
+
         try {
             $obj = new self;
             $obj->getDao()->getById($id);
@@ -33,7 +37,7 @@ class Trainer extends AbstractModel
             \Pimcore\Logger::warn(sprintf('Trainer with id %d not found', $id));
         }
 
-        return null;
+        return $default;
     }
 
     public static function getByName(string $name): ?Trainer
@@ -66,7 +70,7 @@ class Trainer extends AbstractModel
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

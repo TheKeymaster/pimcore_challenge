@@ -77,7 +77,12 @@ class ExcelSheet
                 break;
             }
 
-            $data[] = $this->getRowData($row, $header);
+            $rowData = $this->getRowData($row, $header);
+            if ($this->isEmptyRow($rowData)) {
+                continue;
+            }
+
+            $data[] = $rowData;
         }
 
         return $data;
@@ -116,5 +121,12 @@ class ExcelSheet
         // Adds the key of the header as key for the data values.
         // This allows easy access such as $rowData['name'];
         return array_combine($header, $data);
+    }
+
+    private function isEmptyRow(array $rowData): bool
+    {
+        $filtered = array_filter($rowData);
+
+        return count($filtered) === 0;
     }
 }

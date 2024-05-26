@@ -12,7 +12,7 @@ class Dao extends AbstractDao
 {
     public function load(): array
     {
-        $sql = 'SELECT id FROM ' . 'teams' . $this->getCondition() . $this->getOrder() . $this->getOffsetLimit();
+        $sql = 'SELECT * FROM ' . 'teams' . $this->getCondition() . $this->getOrder() . $this->getOffsetLimit();
 
         return $this->db->fetchFirstColumn($sql, []);
     }
@@ -28,7 +28,7 @@ class Dao extends AbstractDao
     {
         try {
             return (int) $this->db->fetchOne('SELECT COUNT(*) FROM ' . 'teams ' . $this->getCondition(), []);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return 0;
         }
     }

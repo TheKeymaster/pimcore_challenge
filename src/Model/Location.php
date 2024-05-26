@@ -15,18 +15,22 @@ class Location extends AbstractModel
     public ?float $lat = null;
     public ?float $lon = null;
 
-    public static function getById(int $id): ?Location
+    public static function getById(?int $id, ?Location $default = null): ?Location
     {
+        if (!$id) {
+            return $default;
+        }
+
         try {
             $obj = new self;
             $obj->getDao()->getById($id);
             return $obj;
         }
         catch (NotFoundException) {
-            \Pimcore\Logger::warn(sprintf('Trainer with id %d not found', $id));
+            \Pimcore\Logger::warn(sprintf('Location with id %d not found', $id));
         }
 
-        return null;
+        return $default;
     }
 
     public static function getByName(string $name): ?Location
@@ -40,6 +44,25 @@ class Location extends AbstractModel
         }
 
         return null;
+    }
+
+    public function setData(array $data): void
+    {
+        if ($data['id'] !== null) {
+            $this->setId($data['id']);
+        }
+
+        if ($data['name'] !== null) {
+            $this->setName($data['name']);
+        }
+
+        if ($data['lat'] !== null) {
+            $this->setLat($data['lat']);
+        }
+
+        if ($data['lon'] !== null) {
+            $this->setLon($data['lon']);
+        }
     }
 
     public function setId(int $id): void

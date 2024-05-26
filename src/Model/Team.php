@@ -3,14 +3,11 @@
 namespace App\Model;
 
 use App\Repository\TeamRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Pimcore\Model\AbstractModel;
 use Pimcore\Model\Exception\NotFoundException;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
-class Team extends AbstractModel
+class Team extends AbstractBaseModel
 {
     public ?int $id = null;
     public ?string $name = null;
@@ -19,18 +16,30 @@ class Team extends AbstractModel
     public ?int $trainer_id = null;
     public ?int $location_id = null;
 
-    public static function getById(int $id): ?Team
+    private ?int $player_count = null;
+
+    private ?array $players = null;
+
+    private ?array $trainer = null;
+
+    private ?array $location = null;
+
+    public static function getById(?int $id, ?Team $default = null): ?Team
     {
+        if (!$id) {
+            return $default;
+        }
+
         try {
             $obj = new self;
             $obj->getDao()->getById($id);
             return $obj;
         }
         catch (NotFoundException) {
-            \Pimcore\Logger::warn(sprintf('Trainer with id %d not found', $id));
+            \Pimcore\Logger::warn(sprintf('Team with id %d not found', $id));
         }
 
-        return null;
+        return $default;
     }
 
     public static function getByName(string $name): ?Team
@@ -44,6 +53,24 @@ class Team extends AbstractModel
         }
 
         return null;
+    }
+
+    public static function getByIdWithPlayers(?int $id, ?Team $default = null): ?Team
+    {
+        if (!$id) {
+            return $default;
+        }
+
+        try {
+            $obj = new self;
+            $obj->getDao()->getByIdWithPlayersAndTrainer($id);
+            return $obj;
+        }
+        catch (NotFoundException) {
+            \Pimcore\Logger::warn(sprintf('Team with id %d not found', $id));
+        }
+
+        return $default;
     }
 
     public function setId(int $id): void
@@ -112,6 +139,54 @@ class Team extends AbstractModel
     public function setLocationId(?int $location_id): static
     {
         $this->location_id = $location_id;
+
+        return $this;
+    }
+
+    public function getLocation(): ?array
+    {
+        return $this->location;
+    }
+
+    public function setLocation(array $location): static
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    public function getPlayerCount(): ?int
+    {
+        return $this->player_count;
+    }
+
+    public function setPlayerCount(?int $player_count): static
+    {
+        $this->player_count = $player_count;
+
+        return $this;
+    }
+
+    public function getPlayers(): ?array
+    {
+        return $this->players;
+    }
+
+    public function setPlayers(?array $players): static
+    {
+        $this->players = $players;
+
+        return $this;
+    }
+
+    public function getTrainer(): ?array
+    {
+        return $this->trainer;
+    }
+
+    public function setTrainer(?array $trainer): static
+    {
+        $this->trainer = $trainer;
 
         return $this;
     }

@@ -1,0 +1,92 @@
+{% extends 'default/default.html.twig' %}
+
+{% block body %}
+    <div class="col-lg-8 mx-auto p-3 py-md-5">
+        <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
+            <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Pimcore Demo Application</span>
+            </a>
+        </header>
+
+        <main>
+            <h1>Fußball Team Liste</h1>
+            <div class="alert alert-info" role="alert">
+                Run <code>bin/console import:teams &lt;excel-file-name&gt;</code> to import data from an excel file! Find more information in the <code>README.md</code>.
+            </div>
+            <div class="container">
+                <div class="row">
+                    {% for team in teams %}
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="img-wrapper card-img-top">
+                                <img src="{{ team.logo }}?{{ random_number(1, 100000) }}" alt="{{ team.name }}">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ team.name }}</h5>
+                                <div class="card-text">
+                                    <ul>
+                                        <li>Spieler: {{ team.getPlayerCount() }}</li>
+                                        <li>Gründungsjahr: {{ team.founded_at }}</li>
+                                    </ul>
+                                </div>
+                                <a href="{{ path('team_show', { id: team.id }) }}" class="btn btn-primary">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </main>
+    </div>
+    <style>
+        .card {
+            margin: 10px;
+            width: 20rem;
+        }
+
+        .img-wrapper {
+            padding: 10px;
+            max-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-wrapper img {
+            object-fit: contain;
+            max-height: 80px;
+            border-radius: 5px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        @media only screen and (max-width: 2000px) {
+            .row .card {
+                width: 18rem;
+            }
+        }
+        @media only screen and (max-width: 1850px) {
+            .row .card {
+                width: 15rem;
+            }
+        }
+        @media only screen and (max-width: 1500px) {
+            .row .card {
+                width: 13rem;
+            }
+        }
+        @media only screen and (max-width: 1350px) {
+            .row .card {
+                width: 10rem;
+            }
+        }
+        @media only screen and (max-width: 800px) {
+            .row .card {
+                width: 8rem;
+            }
+        }
+    </style>
+{% endblock %}

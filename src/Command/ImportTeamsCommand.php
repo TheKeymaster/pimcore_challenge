@@ -8,11 +8,13 @@ use App\Model\Player;
 use App\Model\PlayerPosition;
 use App\Model\Team;
 use App\Model\Trainer;
+use App\SnakeCaseToCamelCaseConverter;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use TypeError;
 
 #[AsCommand(
@@ -28,6 +30,13 @@ class ImportTeamsCommand extends AbstractCommand
         'teams',
         'players',
     ];
+
+    public function __construct(
+        private KernelInterface $kernel,
+        private SnakeCaseToCamelCaseConverter $snakeCaseToCamelCaseConverter
+    ) {
+        parent::__construct('import:teams');
+    }
 
     protected function configure(): void
     {
@@ -54,13 +63,7 @@ class ImportTeamsCommand extends AbstractCommand
             return self::INVALID;
         }
 
-        $list = Team\Listing::getItems();
-        $list->setCondition('founded_at = 1933');
-        $result = $list->load();
-
-        dd($result);
-
-        $rootPath = __DIR__ . '/../..';
+        $rootPath = $this->kernel->getProjectDir();
         $filePath = $rootPath . DIRECTORY_SEPARATOR . $input->getArgument('file');
 
         $this->importData($filePath);
@@ -75,9 +78,14 @@ class ImportTeamsCommand extends AbstractCommand
 
         foreach ($sheets as $sheetName => $isAvailable) {
             if (!$isAvailable) {
-                $this->output->writeln('<bg=yellow;options=bold>Sheet ' . $sheetName . ' is not available. Skipping.</>');
+                $this->output->writeln(
+                    '<bg=yellow;options=bold>Sheet ' . $sheetName . ' is not available. Skipping.</>'
+                );
+
                 continue;
             }
+
+            $this->output->writeln('<info>Importing ' . $sheetName . '...</info>');
 
             $limit = 20;
             $offset = 1;
@@ -87,16 +95,19 @@ class ImportTeamsCommand extends AbstractCommand
             while ($total > $offset) {
                 $rows = $sheet->getRows($filePath, $offset, $limit, $sheetName);
 
-                $createMethod = 'create' . ucfirst($sheetName) . 'Entity';
+                $createMethod = 'create' . $this->snakeCaseToCamelCaseConverter->convert($sheetName) . 'Entity';
                 foreach ($rows as $row) {
                     try {
                         $this->{$createMethod}($row);
 
                         $importedItems++;
-                    } catch (TypeError) {
-                        // Ignore.
+                    } catch (TypeError $e) {
+                        $this->output->writeln($e->getMessage());
+                        // Gracefully ignore one malformed row.
                     } catch (\Throwable $e) {
-                        throw $e; // TODO: Catch exception
+                        $this->output->writeln('<error>Uncaught exception. Import will stop.</error>');
+
+                        throw $e;
                     }
                 }
 
@@ -111,18 +122,9 @@ class ImportTeamsCommand extends AbstractCommand
     {
         $id = $data['id'] ?? null;
 
-        $location = null;
-        if ($id) {
-            $location = Location::getById($id);
-        }
+        $location = Location::getById($id, new Location());
+        $location->setData($data);
 
-        if (!$location) {
-            $location = new Location();
-        }
-
-        $location->setName($data['name']);
-        $location->setLat($data['lat']);
-        $location->setLon($data['lon']);
         $location->save();
     }
 
@@ -130,14 +132,7 @@ class ImportTeamsCommand extends AbstractCommand
     {
         $id = $data['id'] ?? null;
 
-        $trainer = null;
-        if ($id) {
-            $trainer = Trainer::getById($id);
-        }
-
-        if (!$trainer) {
-            $trainer = new Trainer();
-        }
+        $trainer = Trainer::getById($id, new Trainer());
 
         $trainer->setFirstName($data['first_name']);
         $trainer->setLastName($data['last_name']);
@@ -145,19 +140,11 @@ class ImportTeamsCommand extends AbstractCommand
         $trainer->save();
     }
 
-    private function createPlayer_positionsEntity(array $data): void
+    private function createPlayerPositionsEntity(array $data): void
     {
         $id = $data['id'] ?? null;
 
-        $playerPosition = null;
-        if ($id) {
-            $playerPosition = PlayerPosition::getById($id);
-        }
-
-        if (!$playerPosition) {
-            $playerPosition = new PlayerPosition();
-        }
-
+        $playerPosition = PlayerPosition::getById($id, new PlayerPosition());
         $playerPosition->setName($data['name']);
 
         $playerPosition->save();
@@ -167,14 +154,7 @@ class ImportTeamsCommand extends AbstractCommand
     {
         $id = $data['id'] ?? null;
 
-        $team = null;
-        if ($id) {
-            $team = Team::getById($id);
-        }
-
-        if (!$team) {
-            $team = new Team();
-        }
+        $team = Team::getById($id, new Team());
 
         if ((int)$data['trainer'] !== 0) {
             $trainer = Trainer::getById($data['trainer']);
@@ -201,14 +181,7 @@ class ImportTeamsCommand extends AbstractCommand
     {
         $id = $data['id'] ?? null;
 
-        $player = null;
-        if ($id) {
-            $player = Player::getById($id);
-        }
-
-        if (!$player) {
-            $player = new Player();
-        }
+        $player = Player::getById($id, new Player());
 
         if ((int)$data['position'] !== 0) {
             $playerPosition = PlayerPosition::getById($data['position']);

@@ -1,0 +1,89 @@
+{% extends 'default/default.html.twig' %}
+
+{% block body %}
+    <div class="col-lg-8 mx-auto p-3 py-md-5">
+        <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
+            <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Pimcore Demo Application</span>
+            </a>
+        </header>
+
+        <main>
+            <h1>{{ team.name }}</h1>
+            <div class="img-wrapper">
+                <img src="{{ team.logo }}" />
+            </div>
+            <div class="container">
+                <ul>
+                    <li>ID: {{ team.id }}</li>
+                    <li>Trainer: {{ team.trainer.first_name }} {{ team.trainer.last_name }}</li>
+                    <li>Ort: {{ team.location.name }} (Latitude: {{ team.location.lat }} Longitude: {{ team.location.lon }})</li>
+                    <li>Gründungsjahr: {{ team.founded_at }}</li>
+                    <li>Spieler:</li>
+                    <ul>
+                        {% for player in team.players %}
+                            <li>Nummer {{ player.field_number}}: {{ player.first_name }} {{ player.last_name }} (Alter: {{ player.age }}, Pos: {{ player.name }})</li>
+                        {% endfor %}
+                    </ul>
+                </ul>
+            </div>
+            <div class="back-button">
+                <a href="/football/teams" class="btn btn-primary">Zurück</a>
+            </div>
+        </main>
+    </div>
+    <style>
+        .back-button {
+            display: flex;
+        }
+        .card {
+            margin: 10px;
+            width: 20rem;
+        }
+
+        .img-wrapper {
+            padding: 10px;
+            max-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+
+        .img-wrapper img {
+            object-fit: contain;
+            max-height: 130px;
+            border-radius: 5px;
+        }
+
+        ul {
+            /*list-style: none;*/
+            /*padding: 0;*/
+        }
+
+        @media only screen and (max-width: 2000px) {
+            .row .card {
+                width: 18rem;
+            }
+        }
+        @media only screen and (max-width: 1850px) {
+            .row .card {
+                width: 15rem;
+            }
+        }
+        @media only screen and (max-width: 1500px) {
+            .row .card {
+                width: 13rem;
+            }
+        }
+        @media only screen and (max-width: 1350px) {
+            .row .card {
+                width: 10rem;
+            }
+        }
+        @media only screen and (max-width: 800px) {
+            .row .card {
+                width: 8rem;
+            }
+        }
+    </style>
+{% endblock %}

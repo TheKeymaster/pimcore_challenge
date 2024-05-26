@@ -50,6 +50,7 @@ nbproject
 
 # Any Excel files
 *.xlsx
+!example.xlsx
 
 # Cache
 /cache/

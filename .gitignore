@@ -47,3 +47,9 @@ nbproject
 
 # temp
 .temp
+
+# Any Excel files
+*.xlsx
+
+# Cache
+/cache/

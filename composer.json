@@ -14,6 +14,8 @@
   "require": {
     "php": ">=8",
     "pimcore/admin-ui-classic-bundle": "^1.0",
+    "pimcore/data-hub": "^1.7",
+    "pimcore/data-importer": "^1.8",
     "pimcore/pimcore": "^11.0.4",
     "symfony/dotenv": "^6.2",
     "symfony/orm-pack": "^2.4",

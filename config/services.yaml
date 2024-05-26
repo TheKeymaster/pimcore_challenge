@@ -60,6 +60,11 @@ services:
         tags: [ 'console.command' ]
 
 
+    App\Installer:
+        public: true
+        arguments:
+            $bundle: "@=service('kernel').getBundle('AppBundle')"
+
 
     # Example custom templating helper
     # App\Templating\Helper\Example:

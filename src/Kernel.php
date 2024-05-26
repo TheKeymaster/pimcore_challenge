@@ -31,4 +31,12 @@ class Kernel extends PimcoreKernel
     {
         $collection->addBundle(new PimcoreAdminBundle(), 60);
     }
+
+    public function registerBundles(): array
+    {
+        $bundles = parent::registerBundles();
+        $bundles[] = new AppBundle();
+
+        return $bundles;
+    }
 }

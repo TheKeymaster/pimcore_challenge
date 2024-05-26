@@ -1,0 +1,27 @@
+doctrine:
+    dbal:
+        connections:
+            default:
+                driver: 'pdo_mysql'
+                host: '%env(DATABASE_HOST)%'
+                port: '%env(DATABASE_PORT)%'
+                dbname: '%env(DATABASE_NAME)%'
+                user: '%env(DATABASE_USER)%'
+                password: '%env(DATABASE_PASSWORD)%'
+                charset: utf8mb4
+                default_table_options:
+                    charset: utf8mb4
+                    collate: utf8mb4_unicode_ci
+                    collation: utf8mb4_unicode_ci
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        entity_managers:
+            default:
+                connection: default
+                mappings:
+                    Model:
+                        is_bundle: false
+                        type: attribute
+                        dir: '%kernel.project_dir%/src/Model'
+                        prefix: 'App\Model'
+                        alias: Model
